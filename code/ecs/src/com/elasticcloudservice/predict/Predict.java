@@ -26,7 +26,7 @@ public class Predict {
 		String beginDate=inputContent[inputContent.length-2];
 		String endDate=inputContent[inputContent.length-1];
 		List<int[]> resultOfDaysOfFlavors = predictAll(ecsContent,beginDate,endDate,inputFlavors);//返回每种虚拟机每天的数量，List.get(i)[j]表示flavori第j天的数量，j=0表示总数。
-		ArrayList<Integer> resultOfNumbersOfFlavors = new ArrayList<>();//虚拟机总数和每种虚拟机的数量
+		ArrayList<Integer> resultOfNumbersOfFlavors = new ArrayList<>(SUM_KINDS_OF_FLAVORS+1);//虚拟机总数和每种虚拟机的数量
 		resultOfNumbersOfFlavors.add(0);//第一个计数
 		int[] numberOfFlavors = getNumbersOfFlavors(inputFlavors);//要预测的虚拟机种类
 		for (int i=1;i<SUM_KINDS_OF_FLAVORS+1;i++) {
@@ -110,6 +110,13 @@ public class Predict {
 		for (int i=0;i<row;i++) {
 			flavorData[i][0]=1.0;
 		}
+		//change to sum
+//		for (int i=0;i<flavorData.length;i++) {
+//			for (int j=2;j<flavorData[0].length;j++) {
+//				flavorData[i][j]=flavorData[i][j]+flavorData[i][j-1];
+//			}
+//		}
+		//change to sum
 		return flavorData;
 	}
 
@@ -131,7 +138,7 @@ public class Predict {
 	public static int[] predictOneFlavor(String[] trainDataStringArray, int flavor, int days) {
 		int key = 20;
 		double alpha = 0.0001;
-		int iteration = 400000;
+		int iteration = 300000;
 		List<double[]> dataList = loadDataFromStringArray(trainDataStringArray);
 		double[][] trainData = getFlavorArrayFromDataList(flavor, key, dataList);
 		LinearRegression m = new LinearRegression(trainData, alpha, iteration);
@@ -153,6 +160,10 @@ public class Predict {
 			System.arraycopy(temp, 2, history, 1, key - 1);
 			history[key] = result_double[i];
 		}
+		//********new add************//
+//		for (int i=result_int.length-1;i>0;i--) {
+//			result_int[i]=result_int[i]-result_int[i-1];
+//		}
 		for (int r : result_int) {
 			result_int[0]=result_int[0]+r;
 		}
