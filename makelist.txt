@@ -3,3 +3,6 @@ com/filetool/util/FileUtil.java
 com/filetool/util/LogUtil.java
 com/elasticcloudservice/predict/Predict.java
 com/elasticcloudservice/predict/PutServer.java
+com/elasticcloudservice/predict/DataUtil.java
+com/elasticcloudservice/predict/LinearRegression.java
+com/elasticcloudservice/predict/Server.java

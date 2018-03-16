@@ -1,34 +1,9 @@
 package com.elasticcloudservice.predict;
-import com.filetool.util.FileUtil;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.Closeable;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
 
-
-
-class server{//·þÎñÆ÷
-    public Map<String,Integer> VirtualList=new HashMap<String,Integer>();//ÓÃ¹þÏ£±íŽæŽ¢Ã¿žö·þÎñÆ÷Àïž÷¿îÐéÄâ»úÊýÁ¿£¬ÏÂ±êÊÇÐéÄâ»úÖÖÀà£¬ÖµÊÇÐéÄâ»úÊýÁ¿
-    public int RemainCPU=56;
-    public int RemainMemory=128;//µ¥Î»GB
-    public server(int ServerTypeCPU,int ServerTypeMemory){//¹¹Ôì·œ·š¡£ÕâÀïÔÝÇÒÏÈÈÏÎªCPUºÍÄÚŽæÊýÊÇÕâžö£¬ºóÃæÕýÊœÊ¹ÓÃÔÙ×öžÄ¶¯
-        for(int i=0;i<15;i++)
-            this.VirtualList.put("flavor"+(i+1), 0);
-        RemainCPU=ServerTypeCPU;
-        RemainMemory=ServerTypeMemory;
-    }
-}
-
-class putserver {
+public class PutServer {
     public static int judgeCPU(String s) {//·µ»ØÐéÄâ»úCPUµÄÏûºÄ
         if(s.equals("flavor1")||s.equals("flavor2")||s.equals("flavor3"))
             return 1;
@@ -70,7 +45,7 @@ class putserver {
                 return i;
         return 0;
     }
-    public static void first_fit_putVirtualIntoServer(int ServerTypeCPU,int ServerTypeMemory,ArrayList<server> ServerList,String Virtual){
+    public static void first_fit_putVirtualIntoServer(int ServerTypeCPU,int ServerTypeMemory,ArrayList<Server> ServerList,String Virtual){
         for(int i=0;i<ServerList.size();i++)//ŽÓµÚÒ»žö·þÎñÆ÷¿ªÊŒ±éÀú
             if(ServerList.get(i).RemainCPU>=judgeCPU(Virtual)&&ServerList.get(i).RemainMemory>=judgeMemory(Virtual)){//Èç¹ûµÚižö·þÎñÆ÷ÄÜ·ÅÏÂžÃÐéÄâ»ú
                 ServerList.get(i).RemainCPU=ServerList.get(i).RemainCPU-judgeCPU(Virtual);
@@ -79,7 +54,7 @@ class putserver {
                 ServerList.get(i).VirtualList.put(Virtual, num+1);
                 return;
             }
-        ServerList.add(new server(ServerTypeCPU,ServerTypeMemory));//Èç¹û·Å²»ÏÂ£¬ÄÇŸÍÒªÐÂœš·þÎñÆ÷£¬¶øÇÒÐÂœšµÄ·þÎñÆ÷Ò»¶šÄÜ·ÅÏÂ
+        ServerList.add(new Server(ServerTypeCPU,ServerTypeMemory));//Èç¹û·Å²»ÏÂ£¬ÄÇŸÍÒªÐÂœš·þÎñÆ÷£¬¶øÇÒÐÂœšµÄ·þÎñÆ÷Ò»¶šÄÜ·ÅÏÂ
         ServerList.get(ServerList.size()-1).RemainCPU=ServerList.get(ServerList.size()-1).RemainCPU-judgeCPU(Virtual);
         ServerList.get(ServerList.size()-1).RemainMemory=ServerList.get(ServerList.size()-1).RemainMemory-judgeMemory(Virtual);
         int num=ServerList.get(ServerList.size()-1).VirtualList.get(Virtual);
@@ -90,8 +65,8 @@ class putserver {
         //ÐéÄâ»úÁÐ±íÏÂ±ê0ÎªÐéÄâ»ú×ÜÊý£¬ÏÂ±ê1-15·Ö±ðÎªÐéÄâ»ú1¡ª15µÄÊýÁ¿¡£ÏÂ±êÎª-1±íÊŸ²»ÐèÒªÅÐ¶ÏµÄÐéÄâ»ú£¬ÏÂ±êŽóÓÚµÈÓÚ0ÎªÐèÒªÅÐ¶ÏµÄÐéÄâ»ú
         ArrayList<Integer> VirtualList_int_copy=new ArrayList<Integer>();
         VirtualList_int_copy.addAll(VirtualList_int);
-        ArrayList<server> ServerList=new ArrayList<server>();//Êä³öµÄ·þÎñÆ÷×ÊÔŽ·ÖÅä
-        ServerList.add(new server(ServerTypeCPU,ServerTypeMemory));
+        ArrayList<Server> ServerList=new ArrayList<Server>();//Êä³öµÄ·þÎñÆ÷×ÊÔŽ·ÖÅä
+        ServerList.add(new Server(ServerTypeCPU,ServerTypeMemory));
 
         while(remainVirtual(VirtualList_int)!=0) {
             int StartIndex=maxVirtualIndex(VirtualList_int);
