@@ -5,11 +5,12 @@ import java.util.List;
 import com.elasticcloudservice.predict.DataUtil;
 
 public class Predict {
-	public static final double ALPHA = 0.0001;
-	public static final int ITERATION = 300000;
-	public static final int KEY = 20;
+	private static final double ALPHA = 0.0001;
+	private static final int ITERATION = 300000;
+	private  static  int KEY = 20;
 
-	public static String[] predictVm(String[] ecsContent, String[] inputContent) {
+	public static String[] predictVm(String[] ecsContent, String[] inputContent, int KEY) {
+		Predict.KEY=KEY;
 		final int SUM_KINDS_OF_FLAVORS = 15;							//sum kinds of flavors
 		String physicalServer = inputContent[0];						//get input server String
 		int typeOfECS = Integer.parseInt(inputContent[2]);				//get number of input flavor

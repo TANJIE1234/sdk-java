@@ -32,11 +32,11 @@ public class Main {
 		String[] inputContent = FileUtil.read(inputFilePath, null);
 
 		// 功能实现入口
-		String[] resultContents = Predict.predictVm(ecsContent, inputContent);
+		String[] resultContents = Predict.predictVm(ecsContent, inputContent,29);
 
 		// 写入输出文件
 		if (hasResults(resultContents)) {
-			FileUtil.write(resultFilePath, resultContents, false);
+			FileUtil.write(resultFilePath, resultContents, true);
 		} else {
 			FileUtil.write(resultFilePath, new String[] { "NA" }, false);
 		}

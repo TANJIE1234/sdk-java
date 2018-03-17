@@ -31,22 +31,28 @@ public final class DataUtil{
             if (daysBtn==0) {
                 ((dataList.get(day))[getNumberOfFlavor(tempData[1])])++;
             }
-            else if(daysBtn==1) {
-                date = tempData[2];
-                day++;
-                dataList.add(new double[16]);
-                (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
-            }
             else {
-                date = tempData[2];
-                for (int i=0;i<daysBtn-1;i++) {
+                    date = tempData[2];
                     day++;
                     dataList.add(new double[16]);
-                }
-                day++;
-                dataList.add(new double[16]);
-                (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
+                    (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
             }
+            //else if(daysBtn==1) {
+            //    date = tempData[2];
+            //    day++;
+            //    dataList.add(new double[16]);
+            //    (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
+            //}
+            //else {
+            //    date = tempData[2];
+            //    for (int i=0;i<daysBtn-1;i++) {
+            //        day++;
+            //        dataList.add(new double[16]);
+            //    }
+            //    day++;
+            //    dataList.add(new double[16]);
+            //    (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
+            //}
         }
 
         return dataList;
