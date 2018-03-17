@@ -56,7 +56,7 @@ public class Predict {
 		 * get result of boxing
 		 * **/
 		String[] results =
-				PutServer.putservermethod(serverTypeCPU,serverTypeMemory,resultOfNumbersOfFlavors);
+				PutServer.putservermethod(serverTypeCPU,serverTypeMemory,resultOfNumbersOfFlavors,paramToOptimize);
 		return results;
 	}
 

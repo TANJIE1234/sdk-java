@@ -61,19 +61,15 @@ public class PutServer {
         ServerList.get(ServerList.size()-1).VirtualList.put(Virtual, num+1);
     }
 
-    public static String[] putservermethod(int ServerTypeCPU,int ServerTypeMemory,ArrayList<Integer> VirtualList_int) {//·ÖÅä·œ·š¡£ÊäÈë²ÎÊý·Ö±ðÎªÐèÒªÊä³öÎÄŒþµÄŸø¶ÔµØÖ·£¬·þÎñÆ÷CPU£¬·þÎñÆ÷ÄÚŽæ£¬ÐéÄâ»úÁÐ±í
+    public static String[] putservermethod(int ServerTypeCPU,int ServerTypeMemory,ArrayList<Integer> VirtualList_int,String judgeType) {//·ÖÅä·œ·š¡£ÊäÈë²ÎÊý·Ö±ðÎªÐèÒªÊä³öÎÄŒþµÄŸø¶ÔµØÖ·£¬·þÎñÆ÷CPU£¬·þÎñÆ÷ÄÚŽæ£¬ÐéÄâ»úÁÐ±í
         //ÐéÄâ»úÁÐ±íÏÂ±ê0ÎªÐéÄâ»ú×ÜÊý£¬ÏÂ±ê1-15·Ö±ðÎªÐéÄâ»ú1¡ª15µÄÊýÁ¿¡£ÏÂ±êÎª-1±íÊŸ²»ÐèÒªÅÐ¶ÏµÄÐéÄâ»ú£¬ÏÂ±êŽóÓÚµÈÓÚ0ÎªÐèÒªÅÐ¶ÏµÄÐéÄâ»ú
         ArrayList<Integer> VirtualList_int_copy=new ArrayList<Integer>();
         VirtualList_int_copy.addAll(VirtualList_int);
         ArrayList<Server> ServerList=new ArrayList<Server>();//Êä³öµÄ·þÎñÆ÷×ÊÔŽ·ÖÅä
         ServerList.add(new Server(ServerTypeCPU,ServerTypeMemory));
 
-        while(remainVirtual(VirtualList_int)!=0) {
-            int StartIndex=maxVirtualIndex(VirtualList_int);
-            first_fit_putVirtualIntoServer(ServerTypeCPU,ServerTypeMemory,ServerList,"flavor"+StartIndex);
-            VirtualList_int.set(StartIndex, VirtualList_int.get(StartIndex)-1);
-            VirtualList_int.set(0,VirtualList_int.get(0)-1);
-        }
+        exchange_first_fit_putVirtualIntoServer(ServerTypeCPU,ServerTypeMemory,ServerList,VirtualList_int,judgeType);
+
         Integer ServerCount=ServerList.size();//·þÎñÆ÷µÄ×ÜÊý
         //Êä³öœá¹ûÎÄŒþ¡£Êä³öÒ»žöÎÄŒþ£¬ÎÄŒþžñÊœÎª
 		/*
@@ -110,5 +106,95 @@ public class PutServer {
         String[] FinalResultshuzu=FinalResult.toArray(new String[0]);
         return FinalResultshuzu;
     }
+
+    public static int orderMaxVirtualIndex(ArrayList<Integer> VirtualList,int[] Order){
+        for(int i=14;i>=0;i--)
+            if(VirtualList.get(Order[i])>0)
+                return Order[i];
+        return 0;
+    }
+
+    public static int findMinVirtual(String JudgeResource,Server CurrentServer,int CurrentFlavor){//·µ»ØÔÚžÃ·þÎñÆ÷ÖÐÅÐ¶Ï×ÊÔŽ×îÐ¡£¬ÁíÒ»žö×ÊÔŽÏàÍ¬µÄÐéÄâ»ú
+        if(JudgeResource.equals("CPU")){//Èç¹ûÒªÅÐ¶ÏµÄÊÇCPU£¬Ò²ŸÍÊÇÒªÕÒCurrentSreverÖÐMemoryºÍCurrentFlavorÏàÍ¬£¬µ«ÊÇCPU×îÐ¡µÄÄÇžöflavorµÄ±àºÅ
+            for(int i=1;i<=15;i++){
+                if(CurrentServer.VirtualList.containsKey("flavor"+i)&&CurrentServer.VirtualList.get("flavor"+i)>0&&judgeCPU("flavor"+i)<judgeCPU("flavor"+CurrentFlavor)&&judgeMemory("flavor"+i)==judgeMemory("flavor"+CurrentFlavor)&&CurrentServer.RemainCPU+judgeCPU("flavor"+i)-judgeCPU("flavor"+CurrentFlavor)>=0)
+                    //Òª·ûºÏ£º1¡¢žÃflavorŽæÔÚ£¬2¡¢žÃflavorµÄMemoryºÍcurrentflavorÏàÍ¬£¬3¡¢žÃFlavorµÄCPU±ÈcurrentflavorµÄÐ¡£¬4¡¢·þÎñÆ÷µÄ¿ÕŒäÔÊÐíœ»»»
+                    return i;
+            }
+            return 0;//·µ»Ø0±íÊŸ²»ŽæÔÚ£¬²»œ»»»
+        }
+        else{//ÅÐ¶ÏµÄÊÇMemory
+            int[] Order=new int[]{1,2,4,3,5,6,7,8,10,9,11,13,12,14,15};
+            for(int i=0;i<=14;i++){
+                if(CurrentServer.VirtualList.containsKey("flavor"+i)&&CurrentServer.VirtualList.get("flavor"+i)>0&&judgeMemory("flavor"+Order[i])<judgeMemory("flavor"+CurrentFlavor)&&judgeCPU("flavor"+Order[i])==judgeCPU("flavor"+CurrentFlavor)&&CurrentServer.RemainMemory+judgeMemory("flavor"+Order[i])-judgeMemory("flavor"+CurrentFlavor)>=0)
+                    return Order[i];
+            }
+            return 0;//·µ»Ø0±íÊŸ²»ŽæÔÚ£¬²»œ»»»
+        }
+    }
+
+    public static void exchange_first_fit_putVirtualIntoServer(int ServerTypeCPU,int ServerTypeMemory,ArrayList<Server> ServerList/*ÈÏÎªÀïÃæÖÁÉÙÒÑŸ­ÓÐÁËÒ»Ìš·þÎñÆ÷*/,ArrayList<Integer> VirtualList,String JudgeType){
+        int[] Order=new int[15];
+        if(JudgeType.equals("CPU")){//°ŽÕÕCPUŽóÐ¡ÀŽÅÅÐò
+            for(int i=0;i<15;i++)
+                Order[i]=i+1;
+        }
+        if(JudgeType.equals("MEM")){//°ŽÕÕMemoryŽóÐ¡ÀŽÅÅÐò
+            Order[0]=1;Order[1]=2;Order[2]=4;Order[3]=3;Order[4]=5;Order[5]=6;Order[6]=7;Order[7]=8;Order[8]=10;Order[9]=9;
+            Order[10]=11;Order[11]=13;Order[12]=12;Order[13]=14;Order[14]=15;
+        }
+        while(remainVirtual(VirtualList)!=0){//Ö»ÒªVirtual»¹ŽæÔÚ
+            int StartIndex=orderMaxVirtualIndex(VirtualList,Order);
+            for(int i=0;i<ServerList.size()+1;i++){//ŽÓµÚÒ»žö·þÎñÆ÷¿ªÊŒ±éÀú
+                if(i!=ServerList.size()){
+                    if(ServerList.get(i).RemainCPU>=judgeCPU("flavor"+StartIndex)&&ServerList.get(i).RemainMemory>=judgeMemory("flavor"+StartIndex)){//Èç¹ûÁœžö×ÊÔŽ¶ŒÄÜ×°ÏÂ
+                        ServerList.get(i).RemainCPU=ServerList.get(i).RemainCPU-judgeCPU("flavor"+StartIndex);
+                        ServerList.get(i).RemainMemory=ServerList.get(i).RemainMemory-judgeMemory("flavor"+StartIndex);
+                        ServerList.get(i).VirtualList.put("flavor"+StartIndex, ServerList.get(i).VirtualList.get("flavor"+StartIndex)+1);
+                        VirtualList.set(0, VirtualList.get(0)-1);
+                        VirtualList.set(StartIndex, VirtualList.get(StartIndex)-1);
+                        break;
+                    }
+                    else if(ServerList.get(i).RemainCPU<judgeCPU("flavor"+StartIndex)&&ServerList.get(i).RemainMemory>=judgeMemory("flavor"+StartIndex)){//CPU·Å²»ÏÂ£¬µ«ÊÇMemory·ÅµÃÏÂ
+                        int MaybeExchangeIndex=findMinVirtual("CPU", ServerList.get(i), StartIndex);
+                        if(MaybeExchangeIndex==0)
+                            continue;
+                        else{
+                            VirtualList.set(MaybeExchangeIndex, VirtualList.get(MaybeExchangeIndex)+1);
+                            VirtualList.set(StartIndex, VirtualList.get(StartIndex)-1);
+                            ServerList.get(i).RemainCPU=ServerList.get(i).RemainCPU+judgeCPU("flavor"+MaybeExchangeIndex)-judgeCPU("flavor"+StartIndex);
+                            ServerList.get(i).VirtualList.put("flavor"+MaybeExchangeIndex,ServerList.get(i).VirtualList.get("flavor"+MaybeExchangeIndex)-1);
+                            ServerList.get(i).VirtualList.put("flavor"+StartIndex,ServerList.get(i).VirtualList.get("flavor"+StartIndex)+1);
+                            break;
+                        }
+                    }
+                    else if(ServerList.get(i).RemainCPU>judgeCPU("flavor"+StartIndex)&&ServerList.get(i).RemainMemory<=judgeMemory("flavor"+StartIndex)){//Memory·Å²»ÏÂ
+                        int MaybeExchangeIndex=findMinVirtual("MEM", ServerList.get(i), StartIndex);
+                        if(MaybeExchangeIndex==0)
+                            continue;
+                        else{
+                            VirtualList.set(MaybeExchangeIndex, VirtualList.get(MaybeExchangeIndex)+1);
+                            VirtualList.set(StartIndex, VirtualList.get(StartIndex)-1);
+                            ServerList.get(i).RemainMemory=ServerList.get(i).RemainMemory+judgeMemory("flavor"+MaybeExchangeIndex)-judgeMemory("flavor"+StartIndex);
+                            ServerList.get(i).VirtualList.put("flavor"+MaybeExchangeIndex,ServerList.get(i).VirtualList.get("flavor"+MaybeExchangeIndex)-1);
+                            ServerList.get(i).VirtualList.put("flavor"+StartIndex,ServerList.get(i).VirtualList.get("flavor"+StartIndex)+1);
+                            break;
+                        }
+                    }
+                }
+                else{
+                    ServerList.add(new Server(ServerTypeCPU,ServerTypeMemory));//Èç¹û·Å²»ÏÂ£¬ÄÇŸÍÒªÐÂœš·þÎñÆ÷£¬¶øÇÒÐÂœšµÄ·þÎñÆ÷Ò»¶šÄÜ·ÅÏÂ
+                    ServerList.get(ServerList.size()-1).RemainCPU=ServerTypeCPU-judgeCPU("flavor"+StartIndex);
+                    ServerList.get(ServerList.size()-1).RemainMemory=ServerTypeMemory-judgeMemory("flavor"+StartIndex);
+                    ServerList.get(ServerList.size()-1).VirtualList.put("flavor"+StartIndex, 1);
+                    VirtualList.set(0, VirtualList.get(0)-1);
+                    VirtualList.set(StartIndex, VirtualList.get(StartIndex)-1);
+                    break;
+                }
+            }
+            //Èç¹ûÁœžö¶Œ×°²»ÏÂ
+        }
+    }
+
 }
 
