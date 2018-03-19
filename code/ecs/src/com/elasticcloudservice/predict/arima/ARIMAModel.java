@@ -66,7 +66,7 @@ public class ARIMAModel
 		double minAIC = Double.MAX_VALUE;
 		int [] bestModel = new int[3];
 		int type = 0;
-		Vector<double []>coe = new Vector<>();
+		Vector<double []> coe = new Vector<>();
 		
 		// model����, ��������Ӧ��p, q����
 		int len = data.length;
