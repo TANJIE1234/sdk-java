@@ -102,6 +102,15 @@ public final class DataUtil{
         return flavorData;
     }
 
+    //one row for arima
+    public static double[] getFlavorArrayFromDataList(int flavor, List<double[]> dataList) {
+        double[] flavorData = new double[dataList.size()];
+        for (int i=0; i<flavorData.length; i++){
+            flavorData[i]=dataList.get(i)[flavor];
+        }
+        return flavorData;
+    }
+
     //calculate days between two date
     public static int calDaysBetween(String date1, String date2) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
