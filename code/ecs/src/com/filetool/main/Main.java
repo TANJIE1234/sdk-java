@@ -1,5 +1,7 @@
 package com.filetool.main;
 
+import com.elasticcloudservice.predict.DataUtil;
+import com.elasticcloudservice.predict.DataUtilLstm;
 import com.elasticcloudservice.predict.Predict;
 import com.filetool.util.FileUtil;
 import com.filetool.util.LogUtil;
@@ -31,8 +33,10 @@ public class Main {
 		String[] ecsContent = FileUtil.read(ecsDataPath, null);
 		String[] inputContent = FileUtil.read(inputFilePath, null);
 
+		double[][] data = DataUtilLstm.loadDataFromStringArrayWithNoWeek(ecsContent);
+
 		// 功能实现入口
-		String[] resultContents = Predict.predictVm(ecsContent, inputContent,29);
+		String[] resultContents = Predict.predictVm(ecsContent, inputContent,18);
 
 		// 写入输出文件
 		if (hasResults(resultContents)) {

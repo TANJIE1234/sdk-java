@@ -1,8 +1,10 @@
 package com.elasticcloudservice.predict;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import com.elasticcloudservice.predict.DataUtil;
+import com.elasticcloudservice.predict.arima.ARIMAPredict;
 
 public class Predict {
 	private static final double ALPHA = 0.0001;
@@ -28,8 +30,21 @@ public class Predict {
 		String beginDate=inputContent[inputContent.length-2];			//begin date
 		String endDate=inputContent[inputContent.length-1];				//end date
 
+//		List<int[]> resultOfDaysOfFlavors = 							//get flavor of days,List.get(i)[j]=
+//				predictAll(ecsContent,beginDate,endDate,inputFlavors);	//number of flavori at day j,j=0 shows the sum.
+
+//		double[][] fds =  DataUtilLstm.loadDataFromStringArray(ecsContent);
+//		double[][] dsf = DataUtilLstm.getAvgAndStdFromArray(fds);
+//		for (int i=0;i<fds.length;i++){
+//			for (int j=0;j<fds[0].length;j++){
+//				System.out.printf("%8s",fds[i][j]);
+//			}
+//			System.out.println();
+//		}
 		List<int[]> resultOfDaysOfFlavors = 							//get flavor of days,List.get(i)[j]=
-				predictAll(ecsContent,beginDate,endDate,inputFlavors);	//number of flavori at day j,j=0 shows the sum.
+				ARIMAPredict.predict(ecsContent,beginDate,endDate,inputFlavors);	//number of flavori at day j,j=0 shows the sum.
+
+
 
 		ArrayList<Integer> resultOfNumbersOfFlavors =					//get sum of flavors and number of every flavor,
 				new ArrayList<>(SUM_KINDS_OF_FLAVORS+1);		//the first item show the sum,list.get(i) shows flavori.

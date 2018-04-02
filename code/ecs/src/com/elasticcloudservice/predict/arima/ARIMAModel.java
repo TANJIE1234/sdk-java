@@ -8,6 +8,7 @@ public class ARIMAModel
 {
 	double [] originalData = {};
 	double [] dataFirDiff = {};
+	double [] dataSeasonDiff = {};
 	
 	Vector<double []>arimaCoe = new Vector<>();
 	
@@ -31,12 +32,16 @@ public class ARIMAModel
 		return tmpData;
 	}
 	
-	public double [] preSeasonDiff(double [] preData)		//�����Բ��(6, 7)
+	public double [] preSeasonDiff(double [] preData,int period)		//�����Բ��(6, 7)
 	{	
-		double [] tmpData = new double[preData.length - 7];
-		for (int i = 0; i < preData.length - 7; ++i)
+		double [] tmpData = new double[preData.length - period];
+		for (int i = 0; i < preData.length - period; ++i)
 		{
-			tmpData[i] = preData[i + 7] - preData[i];
+			tmpData[i] = preData[i + period] - preData[i];
+//			if (tmpData[i]>15)
+//				tmpData[i]=15;
+//			if (tmpData[i]<-15)
+//				tmpData[i]=-15;
 		}
 		return tmpData;
 	}
@@ -54,8 +59,12 @@ public class ARIMAModel
 		case 1:		 
 			this.dataFirDiff = this.preFirDiff(this.originalData);
 			return this.dataFirDiff;
-		default:	
-			return preSeasonDiff(originalData);
+		default:{
+			this.dataSeasonDiff = this.preSeasonDiff(this.originalData,period);
+			return preFirDiff(dataSeasonDiff);
+//			return this.dataSeasonDiff;
+		}
+
 		}
 	}
 	
@@ -70,21 +79,38 @@ public class ARIMAModel
 		
 		// model����, ��������Ӧ��p, q����
 		int len = data.length;
-		if (len > 5)
+		if (len > 7)
 		{
-			len = 5;
+			len = 11;
 		}
-		int size = ((len + 2) * (len + 1)) / 2 - 1;
-		int [][] model = new int[size][2];
-		int cnt = 0;
+
+//		int size = ((len + 2) * (len + 1)) / 2 - 1;
+//		int [][] model = new int[size][2];
+//		int cnt = 0;
+//		for (int i = 0; i <= len; ++i)
+//		{
+//			for (int j = 0; j <= len - i; ++j)
+//			{
+//				if (i == 0 && j == 0)
+//					continue;
+//				model[cnt][0] = i;
+//				model[cnt++][1] = j;
+//			}
+//		}
+
+//		int model[][] = new int[][]{{7,0}};
+		int size = (len+1)*(len+1);
+		int[][] model = new int[size][2];
+		model[0][0] = 0;
+		model[0][1] = 1;
 		for (int i = 0; i <= len; ++i)
 		{
-			for (int j = 0; j <= len - i; ++j)
+			for (int j = 0; j <= len; ++j)
 			{
 				if (i == 0 && j == 0)
 					continue;
-				model[cnt][0] = i;
-				model[cnt++][1] = j;
+				model[i*len+i+j][0] = i;
+				model[i*len+i+j][1] = j;
 			}
 		}
 
@@ -154,8 +180,10 @@ public class ARIMAModel
 		case 1:
 			return (int)(predictValue + originalData[originalData.length - 1]);
 		case 2:
-		default:	
-			return (int)(predictValue + originalData[originalData.length - 7]);
+		default:{
+//			return (int)(predictValue + originalData[originalData.length - 7]);
+			return (int)(predictValue + dataSeasonDiff[dataSeasonDiff.length-1] + originalData[originalData.length - 7]);
+		}
 		}
 	}
 	
@@ -184,6 +212,7 @@ public class ARIMAModel
 				{
 					errData[j] = errData[j - 1];
 				}
+//				errData[0] = 0*Math.sqrt(maCoe[0]);
 				errData[0] = random.nextGaussian()*Math.sqrt(maCoe[0]);
 			}
 			
@@ -227,6 +256,7 @@ public class ARIMAModel
 					errData[j] = errData[j-1];
 				}
 				
+//				errData[0] = 0 * Math.sqrt(maCoe[0]);
 				errData[0] = random.nextGaussian() * Math.sqrt(maCoe[0]);
 			}
 			

@@ -217,7 +217,7 @@ public class ARMAMethod
 			}
 //			return Math.log(sumErr) + (q + 1) * 2 / n;
 			return (n - (q - 1)) * Math.log(sumErr / (n - (q - 1))) + (q + 1) * 2;
-			// return  (n-(q-1))*Math.log(sumErr/(n-(q-1)))+(q)*Math.log(n-(q-1));		//AIC ��С���˹���
+//			 return  (n-(q-1))*Math.log(sumErr/(n-(q-1)))+(q)*Math.log(n-(q-1));		//AIC ��С���˹���
 		}
 		/* AR */
 		else if (type == 2)
@@ -236,7 +236,7 @@ public class ARMAMethod
 			}
 //			return Math.log(sumErr) + (p + 1) * 2 / n;
 			return (n - (p - 1)) * Math.log(sumErr / (n - (p - 1))) + (p + 1) * 2;
-			// return (n-(p-1))*Math.log(sumErr/(n-(p-1)))+(p)*Math.log(n-(p-1));		//AIC ��С���˹���
+//			 return (n-(p-1))*Math.log(sumErr/(n-(p-1)))+(p)*Math.log(n-(p-1));		//AIC ��С���˹���
 		}
 		/* ARMA */
 		else
@@ -270,7 +270,7 @@ public class ARMAMethod
 			}
 //			return Math.log(sumErr) + (q + p + 1) * 2 / n;
 			return (n - (q + p - 1)) * Math.log(sumErr / (n - (q + p - 1))) + (p + q) * 2;
-			// return (n-(p-1))*Math.log(sumErr/(n-(p-1)))+(p+q-1)*Math.log(n-(p-1));		//AIC ��С���˹���
+//			return (n-(p-1))*Math.log(sumErr/(n-(p-1)))+(p+q-1)*Math.log(n-(p-1));		//AIC ��С���˹���
 		}
 	}
 	// Levinson �������

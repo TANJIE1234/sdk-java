@@ -31,29 +31,35 @@ public final class DataUtil{
             if (daysBtn==0) {
                 ((dataList.get(day))[getNumberOfFlavor(tempData[1])])++;
             }
+//            else {
+//                    date = tempData[2];
+//                    day++;
+//                    dataList.add(new double[16]);
+//                    (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
+//            }
+            else if(daysBtn==1) {
+                date = tempData[2];
+                day++;
+                dataList.add(new double[16]);
+                (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
+            }
             else {
-                    date = tempData[2];
+                date = tempData[2];
+                for (int i=0;i<daysBtn-1;i++) {
                     day++;
                     dataList.add(new double[16]);
-                    (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
+                }
+                day++;
+                dataList.add(new double[16]);
+                (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
             }
-            //else if(daysBtn==1) {
-            //    date = tempData[2];
-            //    day++;
-            //    dataList.add(new double[16]);
-            //    (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
-            //}
-            //else {
-            //    date = tempData[2];
-            //    for (int i=0;i<daysBtn-1;i++) {
-            //        day++;
-            //        dataList.add(new double[16]);
-            //    }
-            //    day++;
-            //    dataList.add(new double[16]);
-            //    (dataList.get(day))[getNumberOfFlavor(tempData[1])]++;
-            //}
         }
+        //data pre deal
+
+//        for (int i = 0; i < dataList.size(); i++)
+//            for (int j=1;j<dataList.get(i).length;j++){
+//                dataList.get(i)[j] = Math.pow(Math.E, dataList.get(i)[j]);
+//            }
 
         return dataList;
     }
@@ -105,11 +111,26 @@ public final class DataUtil{
     //one row for arima
     public static double[] getFlavorArrayFromDataList(int flavor, List<double[]> dataList) {
         double[] flavorData = new double[dataList.size()];
+        double sum = 0;
+        double avg = 0;
         for (int i=0; i<flavorData.length; i++){
             flavorData[i]=dataList.get(i)[flavor];
+            sum = sum + flavorData[i];
+        }
+        avg = sum / flavorData.length;
+        for (int i=0;i<flavorData.length;i++) {
+            if (flavorData[i] - avg > 25)
+                flavorData[i] = 13;
         }
         return flavorData;
     }
+//    public static double[] getFlavorArrayFromDataList(int flavor, List<double[]> dataList) {
+//        double[] flavorData = new double[dataList.size()];
+//        for (int i=0; i<flavorData.length; i++){
+//            flavorData[i]=dataList.get(i)[flavor];
+//        }
+//        return flavorData;
+//    }
 
     //calculate days between two date
     public static int calDaysBetween(String date1, String date2) {
